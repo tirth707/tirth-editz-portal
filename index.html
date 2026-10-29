@@ -146,8 +146,8 @@
         <input id="macUrl" inputmode="url" autocomplete="off" placeholder="https://macbook.tailnet-name.ts.net">
       </div>
       <div>
-        <label for="cloudUrl">Cloud studio address</label>
-        <input id="cloudUrl" inputmode="url" autocomplete="off" placeholder="https://my-codespace-7860.app.github.dev">
+        <label for="cloudUrl">Cloud studio address (optional)</label>
+        <input id="cloudUrl" inputmode="url" autocomplete="off" placeholder="Found automatically when the codespace starts">
       </div>
       <div>
         <label for="startUrl">Codespaces page (to start the cloud)</label>
@@ -166,9 +166,11 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const STORE = { mode: "te_mode", mac: "te_mac", cloud: "te_cloud", start: "te_start" };
+const CLOUD_TOPIC = "te-cloud-7f3k9q2m5x8v1b4n6c0";
 let macUrl = localStorage.getItem(STORE.mac) || "";
 let cloudUrl = localStorage.getItem(STORE.cloud) || "";
 let startUrl = localStorage.getItem(STORE.start) || "https://github.com/codespaces";
+let liveCloudUrl = "";
 let mode = localStorage.getItem(STORE.mode) || "auto";
 let redirectTimer = null;
 let checks = 0;
@@ -264,12 +266,50 @@ async function checkMac() {
   return null;
 }
 
+async function discoverCloud() {
+  try {
+    const response = await fetch(`https://ntfy.sh/${CLOUD_TOPIC}/json?poll=1&since=12h`, {
+      cache: "no-store",
+    });
+    if (!response.ok) return "";
+    const messages = (await response.text())
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => {
+        try {
+          return JSON.parse(line);
+        } catch (error) {
+          return null;
+        }
+      })
+      .filter(
+        (message) =>
+          message &&
+          message.event === "message" &&
+          typeof message.message === "string" &&
+          /^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(message.message),
+      );
+    return messages.length ? messages[messages.length - 1].message : "";
+  } catch (error) {
+    return "";
+  }
+}
+
 async function checkCloud() {
-  const url = trim(cloudUrl);
+  let url = trim(cloudUrl);
+  let info = url ? await ping(url, 7000) : null;
+  if (!info) {
+    const found = await discoverCloud();
+    if (found) {
+      liveCloudUrl = found;
+      url = found;
+      info = await ping(url, 7000);
+    }
+  }
   if (!url) {
     setDot("cloudDot", "");
-    $("cloudStatus").textContent = "Not set up";
-    $("cloudNote").textContent = "Start a codespace, copy its port 7860 address, and paste it below.";
+    $("cloudStatus").textContent = "Not running";
+    $("cloudNote").textContent = "Start a codespace and the address appears here by itself.";
     showStart(true);
     return null;
   }
@@ -278,19 +318,16 @@ async function checkCloud() {
     $("cloudStatus").textContent = "Needs HTTPS";
     return null;
   }
-  setDot("cloudDot", "busy");
-  $("cloudStatus").textContent = "Checking…";
-  const info = await ping(url, 6000);
   if (info) {
     setDot("cloudDot", "online");
     $("cloudStatus").textContent = "Running";
-    $("cloudNote").textContent = "The codespace is awake. It stops itself after 30 minutes idle.";
+    $("cloudNote").textContent = `Ready at ${url.replace("https://", "")}. It stops itself after 30 minutes idle.`;
     showStart(false);
     return info;
   }
-  setDot("cloudDot", "offline");
-  $("cloudStatus").textContent = "Stopped";
-  $("cloudNote").textContent = "The codespace is stopped or asleep. Start it, wait for the studio to boot, then check again.";
+  setDot("cloudDot", "busy");
+  $("cloudStatus").textContent = "Awake?";
+  $("cloudNote").textContent = "No codespace is answering. Start one, wait about a minute, then tap Check again.";
   showStart(true);
   return null;
 }
@@ -306,13 +343,13 @@ function openMac() {
 }
 
 function openCloud() {
-  if (!trim(cloudUrl)) {
-    $("hint").textContent = "Start a codespace, then paste its address under Setup.";
-    document.querySelector("details").open = true;
-    $("cloudUrl").focus();
+  const target = trim(cloudUrl) || trim(liveCloudUrl);
+  if (!target) {
+    $("hint").textContent = "No codespace is running. Tap Start Codespace, then Check again.";
+    showStart(true);
     return;
   }
-  location.href = trim(cloudUrl);
+  location.href = target;
 }
 
 async function decide() {
@@ -423,7 +460,7 @@ setMode(mode, false);
 
 if (!trim(macUrl) && !trim(cloudUrl)) {
   document.querySelector("details").open = true;
-  $("hint").textContent = "First run: add the MacBook address, or start a codespace and paste its address.";
+  $("hint").textContent = "First run: add the MacBook address, or start a codespace — its address is found by itself.";
   setDot("macDot", "");
   $("macStatus").textContent = "Not set up";
   checkMac();

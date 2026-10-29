@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0910">
+<title>Tirth Editz · Servers</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ffd11a'/><text x='50' y='70' font-size='56' font-family='Arial' font-weight='bold' text-anchor='middle' fill='%2314110a'>T</text></svg>">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --bg: #0b0910;
+    --panel: #15121c;
+    --line: rgba(255, 255, 255, 0.09);
+    --text: #f4f2f7;
+    --muted: #9a95a6;
+    --accent: #ffd11a;
+    --good: #5ee6a8;
+    --bad: #ff6b81;
+    --warn: #ffb02e;
+  }
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0; background:
+      radial-gradient(900px 500px at 50% -10%, rgba(255, 209, 26, 0.13), transparent 65%),
+      var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: grid; place-items: center; padding: 22px 16px 40px;
+  }
+  main { width: min(520px, 100%); display: grid; gap: 16px; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 0.02em; }
+  .logo { width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: #14110a;
+    display: grid; place-items: center; font-size: 19px; font-weight: 900; }
+  .sub { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+  h1 { font-size: 27px; line-height: 1.12; margin: 6px 0 2px; letter-spacing: -0.02em; }
+  .lead { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .mode { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 5px;
+    border: 1px solid var(--line); border-radius: 14px; background: rgba(0, 0, 0, 0.28); }
+  .mode button { border: 0; background: transparent; color: var(--muted); font: inherit;
+    font-size: 13px; font-weight: 700; padding: 10px 8px; border-radius: 10px; cursor: pointer; }
+  .mode button[aria-pressed="true"] { background: var(--accent); color: #14110a; }
+  .card { border: 1px solid var(--line); border-radius: 16px; padding: 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+    display: grid; gap: 13px; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .name { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 9px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #5a5566; box-shadow: 0 0 0 4px rgba(255,255,255,0.04); }
+  .dot.online { background: var(--good); box-shadow: 0 0 0 4px rgba(94, 230, 168, 0.14); }
+  .dot.offline { background: var(--bad); box-shadow: 0 0 0 4px rgba(255, 107, 129, 0.12); }
+  .dot.busy { background: var(--warn); box-shadow: 0 0 0 4px rgba(255, 176, 46, 0.14); }
+  .status { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+    padding: 4px 9px; font-weight: 600; }
+  .tag.good { color: var(--good); border-color: rgba(94,230,168,0.3); }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .primary { flex: 1; border: 0; border-radius: 11px; background: var(--accent); color: #14110a;
+    font: inherit; font-weight: 800; font-size: 14px; padding: 12px 14px; cursor: pointer; }
+  .primary:disabled { opacity: 0.45; cursor: default; }
+  .ghost { border: 1px solid var(--line); border-radius: 11px; background: transparent; color: var(--muted);
+    font: inherit; font-weight: 700; font-size: 13px; padding: 11px 13px; cursor: pointer; }
+  .ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.24); }
+  .note { font-size: 12px; line-height: 1.5; color: var(--muted); margin: 0; }
+  .note strong { color: var(--text); }
+  .warn { color: var(--warn); }
+  details { border-top: 1px solid var(--line); padding-top: 13px; }
+  summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--muted); }
+  summary::marker { color: var(--accent); }
+  .settings { display: grid; gap: 10px; padding-top: 12px; }
+  label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 700; }
+  input { width: 100%; margin-top: 6px; background: rgba(0,0,0,0.35); border: 1px solid var(--line);
+    border-radius: 10px; color: var(--text); padding: 11px 12px; font: inherit; font-size: 13px; }
+  input:focus { outline: 0; border-color: rgba(255,209,26,0.6); }
+  .row { display: flex; gap: 8px; }
+  .row .ghost { flex: 1; }
+  #toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0;
+    background: #1d1926; border: 1px solid var(--line); color: var(--text); padding: 11px 16px;
+    border-radius: 12px; font-size: 13px; transition: 180ms; pointer-events: none; max-width: 90vw; }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+  code { font-size: 11.5px; background: rgba(0,0,0,0.35); padding: 2px 6px; border-radius: 6px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div class="brand"><div class="logo">T</div><div>Tirth Editz<span class="sub" style="display:block">Servers</span></div></div>
+    <button class="ghost" id="retry" type="button">Check again</button>
+  </div>
+
+  <div>
+    <h1>Where should this render?</h1>
+    <p class="lead">Mac is faster and free. Cloud is there when the Mac is asleep or away.</p>
+  </div>
+
+  <div class="mode" role="group" aria-label="Server mode">
+    <button type="button" data-mode="auto" aria-pressed="true">Auto</button>
+    <button type="button" data-mode="mac" aria-pressed="false">MacBook</button>
+    <button type="button" data-mode="cloud" aria-pressed="false">Cloud</button>
+  </div>
+
+  <section class="card" id="macCard">
+    <div class="card-head">
+      <div class="name"><span class="dot" id="macDot"></span>MacBook Air</div>
+      <span class="status" id="macStatus">Checking…</span>
+    </div>
+    <div class="meta">
+      <span class="tag">Full speed</span>
+      <span class="tag">Your files stay local</span>
+      <span class="tag" id="macWhere">—</span>
+    </div>
+    <div class="actions">
+      <button class="primary" id="useMac" type="button">Use MacBook</button>
+    </div>
+    <p class="note" id="macNote">The studio starts by itself when the Mac is on. If the lid is closed or Tailscale is off, it can't be reached.</p>
+  </section>
+
+  <section class="card" id="cloudCard">
+    <div class="card-head">
+      <div class="name"><span class="dot" id="cloudDot"></span>GitHub Codespaces</div>
+      <span class="status" id="cloudStatus">Not checked</span>
+    </div>
+    <div class="meta">
+      <span class="tag">4K · 8 GB</span>
+      <span class="tag">120 core-hours/month</span>
+      <span class="tag">No card</span>
+    </div>
+    <div class="actions">
+      <button class="primary" id="useCloud" type="button">Use Cloud</button>
+      <button class="ghost" id="startCloud" type="button" hidden>Start Codespace</button>
+    </div>
+    <p class="note" id="cloudNote">Free with every GitHub account and no payment method. Starts when you open the codespace; stops itself after 30 minutes idle.</p>
+  </section>
+
+  <p class="note" id="hint"></p>
+
+  <details>
+    <summary>Setup &amp; addresses</summary>
+    <div class="settings">
+      <div>
+        <label for="macUrl">MacBook address (Tailscale HTTPS)</label>
+        <input id="macUrl" inputmode="url" autocomplete="off" placeholder="https://macbook.tailnet-name.ts.net">
+      </div>
+      <div>
+        <label for="cloudUrl">Cloud studio address</label>
+        <input id="cloudUrl" inputmode="url" autocomplete="off" placeholder="https://my-codespace-7860.app.github.dev">
+      </div>
+      <div>
+        <label for="startUrl">Codespaces page (to start the cloud)</label>
+        <input id="startUrl" inputmode="url" autocomplete="off" placeholder="https://github.com/codespaces">
+      </div>
+      <div class="row">
+        <button class="ghost" id="save" type="button">Save addresses</button>
+        <button class="ghost" id="reset" type="button">Reset</button>
+      </div>
+      <p class="note">On the Mac run <code>tailscale serve --bg 7860</code> once. The address it prints goes above. Everything is stored only on this phone.</p>
+    </div>
+  </details>
+</main>
+<div id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const STORE = { mode: "te_mode", mac: "te_mac", cloud: "te_cloud", start: "te_start" };
+let macUrl = localStorage.getItem(STORE.mac) || "";
+let cloudUrl = localStorage.getItem(STORE.cloud) || "";
+let startUrl = localStorage.getItem(STORE.start) || "https://github.com/codespaces";
+let mode = localStorage.getItem(STORE.mode) || "auto";
+let redirectTimer = null;
+let checks = 0;
+
+function toast(message) {
+  const node = $("toast");
+  node.textContent = message;
+  node.classList.add("show");
+  clearTimeout(node._timer);
+  node._timer = setTimeout(() => node.classList.remove("show"), 3200);
+}
+
+function trim(url) {
+  return (url || "").trim().replace(/\/+$/, "");
+}
+
+function showStart(visible) {
+  $("startCloud").hidden = !visible;
+}
+
+function setMode(next, save = true) {
+  mode = next;
+  if (save) localStorage.setItem(STORE.mode, next);
+  document.querySelectorAll(".mode button").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.mode === next));
+  });
+  clearTimeout(redirectTimer);
+  $("hint").textContent = "";
+}
+
+function setDot(id, state) {
+  const dot = $(id);
+  dot.className = "dot " + state;
+}
+
+async function ping(url, timeout = 2400) {
+  if (!url) return null;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(trim(url) + "/api/health", {
+      cache: "no-store",
+      mode: "cors",
+      signal: controller.signal,
+    });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function checkMac() {
+  const url = trim(macUrl);
+  if (!url) {
+    setDot("macDot", "");
+    $("macStatus").textContent = "Not set up";
+    $("macWhere").textContent = "add address below";
+    $("useMac").disabled = false;
+    return null;
+  }
+  let host = "";
+  try {
+    host = new URL(url).host;
+  } catch (error) {
+    setDot("macDot", "offline");
+    $("macStatus").textContent = "Bad address";
+    return null;
+  }
+  if (location.protocol === "https:" && url.startsWith("http://")) {
+    setDot("macDot", "offline");
+    $("macStatus").textContent = "Needs HTTPS";
+    $("macNote").innerHTML = "Browsers block a secure page from calling an <code>http://</code> Mac address. Use the HTTPS address from <code>tailscale serve</code>.";
+    return null;
+  }
+  setDot("macDot", "busy");
+  $("macStatus").textContent = "Checking…";
+  $("macWhere").textContent = host;
+  const info = await ping(url);
+  checks += 1;
+  if (info) {
+    setDot("macDot", "online");
+    $("macStatus").textContent = "Online";
+    $("macWhere").textContent = info.host || host;
+    $("macNote").textContent = "Reachable now. The studio is running on your Mac.";
+    return info;
+  }
+  setDot("macDot", "offline");
+  $("macStatus").textContent = "Offline";
+  $("macNote").textContent = "Not reachable. Open the lid, make sure Tailscale is on, and the studio starts by itself.";
+  return null;
+}
+
+async function checkCloud() {
+  const url = trim(cloudUrl);
+  if (!url) {
+    setDot("cloudDot", "");
+    $("cloudStatus").textContent = "Not set up";
+    $("cloudNote").textContent = "Start a codespace, copy its port 7860 address, and paste it below.";
+    showStart(true);
+    return null;
+  }
+  if (location.protocol === "https:" && url.startsWith("http://")) {
+    setDot("cloudDot", "offline");
+    $("cloudStatus").textContent = "Needs HTTPS";
+    return null;
+  }
+  setDot("cloudDot", "busy");
+  $("cloudStatus").textContent = "Checking…";
+  const info = await ping(url, 6000);
+  if (info) {
+    setDot("cloudDot", "online");
+    $("cloudStatus").textContent = "Running";
+    $("cloudNote").textContent = "The codespace is awake. It stops itself after 30 minutes idle.";
+    showStart(false);
+    return info;
+  }
+  setDot("cloudDot", "offline");
+  $("cloudStatus").textContent = "Stopped";
+  $("cloudNote").textContent = "The codespace is stopped or asleep. Start it, wait for the studio to boot, then check again.";
+  showStart(true);
+  return null;
+}
+
+function openMac() {
+  if (!trim(macUrl)) {
+    $("hint").textContent = "Add the MacBook address under Setup first.";
+    document.querySelector("details").open = true;
+    $("macUrl").focus();
+    return;
+  }
+  location.href = trim(macUrl);
+}
+
+function openCloud() {
+  if (!trim(cloudUrl)) {
+    $("hint").textContent = "Start a codespace, then paste its address under Setup.";
+    document.querySelector("details").open = true;
+    $("cloudUrl").focus();
+    return;
+  }
+  location.href = trim(cloudUrl);
+}
+
+async function decide() {
+  clearTimeout(redirectTimer);
+  if (mode === "cloud") {
+    $("hint").textContent = "Checking the codespace…";
+    const info = await checkCloud();
+    if (info) openCloud();
+    else $("hint").textContent = "Cloud is stopped. Start the codespace, then tap Check again.";
+    return;
+  }
+  if (mode === "mac") {
+    const info = await checkMac();
+    if (info) openMac();
+    else $("hint").textContent = "Mac is offline. You can switch to Cloud, or wake the Mac and tap Check again.";
+    return;
+  }
+  // auto: Mac first, then Codespaces
+  $("hint").textContent = "Checking the Mac…";
+  const mac = await checkMac();
+  if (mac) {
+    $("hint").textContent = "Mac is online — opening it now.";
+    redirectTimer = setTimeout(openMac, 400);
+    return;
+  }
+  $("hint").textContent = "Mac is offline. Checking the codespace…";
+  const cloud = await checkCloud();
+  if (!cloud) {
+    $("hint").textContent = "Both are offline. Wake the Mac, or start a codespace and tap Check again.";
+    return;
+  }
+  let countdown = 3;
+  $("hint").textContent = `Mac is offline. Opening the codespace in ${countdown}s…`;
+  const tick = () => {
+    countdown -= 1;
+    if (countdown <= 0) {
+      openCloud();
+      return;
+    }
+    $("hint").textContent = `Mac is offline. Opening the codespace in ${countdown}s…`;
+    redirectTimer = setTimeout(tick, 1000);
+  };
+  redirectTimer = setTimeout(tick, 1000);
+}
+
+document.querySelectorAll(".mode button").forEach((button) => {
+  button.addEventListener("click", () => {
+    setMode(button.dataset.mode);
+    decide();
+  });
+});
+
+$("useMac").addEventListener("click", async () => {
+  setMode("mac");
+  const info = await checkMac();
+  if (info) openMac();
+  else $("hint").textContent = "Mac is offline. Open the lid and make sure Tailscale is connected, then tap Check again.";
+});
+
+$("useCloud").addEventListener("click", async () => {
+  setMode("cloud");
+  const info = await checkCloud();
+  if (info) openCloud();
+  else $("hint").textContent = "Cloud is stopped. Start the codespace, then tap Check again.";
+});
+
+$("startCloud").addEventListener("click", () => {
+  const url = trim(startUrl) || "https://github.com/codespaces";
+  window.open(url, "_blank", "noopener");
+});
+
+$("retry").addEventListener("click", () => {
+  decide();
+});
+
+$("save").addEventListener("click", () => {
+  macUrl = trim($("macUrl").value);
+  cloudUrl = trim($("cloudUrl").value);
+  startUrl = trim($("startUrl").value);
+  localStorage.setItem(STORE.mac, macUrl);
+  localStorage.setItem(STORE.cloud, cloudUrl);
+  localStorage.setItem(STORE.start, startUrl);
+  toast("Addresses saved on this phone");
+  decide();
+});
+
+$("reset").addEventListener("click", () => {
+  localStorage.removeItem(STORE.mac);
+  localStorage.removeItem(STORE.cloud);
+  localStorage.removeItem(STORE.start);
+  localStorage.removeItem(STORE.mode);
+  macUrl = "";
+  cloudUrl = "";
+  startUrl = "https://github.com/codespaces";
+  setMode("auto", false);
+  $("macUrl").value = "";
+  $("cloudUrl").value = "";
+  $("startUrl").value = startUrl;
+  checkMac();
+  checkCloud();
+  toast("Reset");
+});
+
+$("macUrl").value = macUrl;
+$("cloudUrl").value = cloudUrl;
+$("startUrl").value = startUrl;
+setMode(mode, false);
+
+if (!trim(macUrl) && !trim(cloudUrl)) {
+  document.querySelector("details").open = true;
+  $("hint").textContent = "First run: add the MacBook address, or start a codespace and paste its address.";
+  setDot("macDot", "");
+  $("macStatus").textContent = "Not set up";
+  checkMac();
+  checkCloud();
+} else {
+  decide();
+}
+</script>
+</body>
+</html>

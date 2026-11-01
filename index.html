@@ -428,6 +428,30 @@ async function waitForTunnel(deadline) {
   return "";
 }
 
+async function authOk(url) {
+  if (!cloudSecret) return true;
+  try {
+    const response = await fetch(
+      trim(url) + "/api/auth?token=" + encodeURIComponent(cloudSecret),
+      { cache: "no-store", mode: "cors" },
+    );
+    if (!response.ok) return true;
+    const data = await response.json();
+    return data.ok !== false;
+  } catch (error) {
+    return true;
+  }
+}
+
+function wrongSecret() {
+  const message = "The studio access code saved on this phone is out of date. Set Studio access token to Tirth777 under Setup.";
+  $("hint").textContent = message;
+  $("cloudNote").textContent = message;
+  document.querySelector("details").open = true;
+  $("cloudSecret").focus();
+  toast("Update the studio access code in Setup");
+}
+
 async function startCloudFlow() {
   if (starting) return;
   if (!ghToken) {
@@ -472,6 +496,10 @@ async function startCloudFlow() {
       throw new Error("The codespace is on but the tunnel is not ready. Tap again in about 30 seconds.");
     }
     activeCloudUrl = url;
+    if (!(await authOk(url))) {
+      wrongSecret();
+      return;
+    }
     setDot("cloudDot", "online");
     $("cloudStatus").textContent = "Running";
     $("cloudNote").textContent = `Ready at ${url.replace("https://", "")}. Opening…`;
@@ -479,7 +507,11 @@ async function startCloudFlow() {
   } catch (error) {
     const recovered = await checkCloud();
     if (recovered) {
-      location.href = withToken(activeCloudUrl);
+      if (await authOk(activeCloudUrl)) {
+        location.href = withToken(activeCloudUrl);
+      } else {
+        wrongSecret();
+      }
       return;
     }
     const message = error && error.name === "AbortError"
@@ -537,10 +569,14 @@ function openMac() {
   location.href = trim(macUrl);
 }
 
-function openCloud() {
+async function openCloud() {
   const target = trim(activeCloudUrl) || trim(liveCloudUrl) || trim(cloudUrl);
   if (!target) {
     $("hint").textContent = "No cloud address yet. Tap Start cloud & open.";
+    return;
+  }
+  if (!(await authOk(target))) {
+    wrongSecret();
     return;
   }
   location.href = withToken(target);

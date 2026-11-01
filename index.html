@@ -307,7 +307,9 @@ async function github(path, method = "GET") {
       signal: controller.signal,
     });
     if (response.status === 401 || response.status === 403) {
-      throw new Error("GitHub rejected the token. Create a new token with the codespace scope in Setup.");
+      const denied = new Error("GitHub rejected the token. Create a new token with the codespace scope in Setup.");
+      denied.status = response.status;
+      throw denied;
     }
     if (!response.ok) {
       let detail = "";
@@ -316,7 +318,9 @@ async function github(path, method = "GET") {
       } catch (error) {
         detail = "";
       }
-      throw new Error(detail || "GitHub returned " + response.status);
+      const problem = new Error(detail || "GitHub returned " + response.status);
+      problem.status = response.status;
+      throw problem;
     }
     return await response.json();
   } finally {
@@ -443,7 +447,11 @@ async function startCloudFlow() {
     let space = await findCodespace();
     if (space.state !== "Available") {
       setProgress(true, "Starting codespace");
-      await github(`/user/codespaces/${space.name}/start`, "POST");
+      try {
+        await github(`/user/codespaces/${space.name}/start`, "POST");
+      } catch (error) {
+        if (error.status !== 409) throw error;
+      }
       const deadline = startedAt + 240000;
       while (Date.now() < deadline) {
         await sleep(3000);

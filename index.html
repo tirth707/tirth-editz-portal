@@ -492,9 +492,7 @@ async function startCloudFlow() {
     toast(message);
   } finally {
     starting = false;
-    if ($("useCloud").textContent === "Starting…" || $("useCloud").textContent === "Waiting…") {
-      $("useCloud").textContent = "Start cloud & open";
-    }
+    $("useCloud").textContent = activeCloudUrl ? "Open cloud" : "Start cloud & open";
     $("useCloud").disabled = false;
     setProgress(false);
   }

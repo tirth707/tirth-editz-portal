@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b0910">
+<meta name="format-detection" content="telephone=no">
 <title>Tirth Editz · Servers</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ffd11a'/><text x='50' y='70' font-size='56' font-family='Arial' font-weight='bold' text-anchor='middle' fill='%2314110a'>T</text></svg>">
 <link rel="manifest" href="manifest.webmanifest">
@@ -28,27 +29,32 @@
       var(--bg);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    display: grid; place-items: center; padding: 22px 16px 40px;
+    display: grid; place-items: center;
+    padding: max(18px, env(safe-area-inset-top)) calc(16px + env(safe-area-inset-left)) calc(40px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-right));
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
   }
-  main { width: min(520px, 100%); display: grid; gap: 16px; }
-  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 0.02em; }
+  main { width: min(520px, 100%); display: grid; gap: 16px; min-width: 0; }
+  main > * { min-width: 0; }
+  button { touch-action: manipulation; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 0.02em; min-width: 0; }
   .logo { width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: #14110a;
-    display: grid; place-items: center; font-size: 19px; font-weight: 900; }
+    display: grid; place-items: center; font-size: 19px; font-weight: 900; flex: none; }
   .sub { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
-  h1 { font-size: 27px; line-height: 1.12; margin: 6px 0 2px; letter-spacing: -0.02em; }
-  .lead { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
-  .mode { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 5px;
+  h1 { font-size: clamp(24px, 7vw, 27px); line-height: 1.12; margin: 6px 0 2px; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+  .lead { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+  .mode { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; padding: 5px;
     border: 1px solid var(--line); border-radius: 14px; background: rgba(0, 0, 0, 0.28); }
   .mode button { border: 0; background: transparent; color: var(--muted); font: inherit;
-    font-size: 13px; font-weight: 700; padding: 10px 8px; border-radius: 10px; cursor: pointer; }
+    font-size: 13px; font-weight: 700; padding: 10px 6px; border-radius: 10px; cursor: pointer; min-width: 0; }
   .mode button[aria-pressed="true"] { background: var(--accent); color: #14110a; }
   .card { border: 1px solid var(--line); border-radius: 16px; padding: 16px;
     background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
-    display: grid; gap: 13px; }
-  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .name { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 9px; }
-  .dot { width: 9px; height: 9px; border-radius: 50%; background: #5a5566; box-shadow: 0 0 0 4px rgba(255,255,255,0.04); }
+    display: grid; gap: 13px; min-width: 0; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .name { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 9px; min-width: 0; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #5a5566; box-shadow: 0 0 0 4px rgba(255,255,255,0.04); flex: none; }
   .dot.online { background: var(--good); box-shadow: 0 0 0 4px rgba(94, 230, 168, 0.14); }
   .dot.offline { background: var(--bad); box-shadow: 0 0 0 4px rgba(255, 107, 129, 0.12); }
   .dot.busy { background: var(--warn); box-shadow: 0 0 0 4px rgba(255, 176, 46, 0.14); }
@@ -58,30 +64,39 @@
     padding: 4px 9px; font-weight: 600; }
   .tag.good { color: var(--good); border-color: rgba(94,230,168,0.3); }
   .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .primary { flex: 1; border: 0; border-radius: 11px; background: var(--accent); color: #14110a;
-    font: inherit; font-weight: 800; font-size: 14px; padding: 12px 14px; cursor: pointer; }
-  .primary:disabled { opacity: 0.45; cursor: default; }
+  .primary { flex: 1 1 190px; border: 0; border-radius: 11px; background: var(--accent); color: #14110a;
+    font: inherit; font-weight: 800; font-size: 14px; padding: 13px 14px; cursor: pointer; min-width: 0; }
+  .primary:disabled { opacity: 0.55; cursor: default; }
   .ghost { border: 1px solid var(--line); border-radius: 11px; background: transparent; color: var(--muted);
-    font: inherit; font-weight: 700; font-size: 13px; padding: 11px 13px; cursor: pointer; }
+    font: inherit; font-weight: 700; font-size: 13px; padding: 12px 13px; cursor: pointer; }
   .ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.24); }
-  .note { font-size: 12px; line-height: 1.5; color: var(--muted); margin: 0; }
+  .note { font-size: 12px; line-height: 1.5; color: var(--muted); margin: 0; overflow-wrap: anywhere; }
   .note strong { color: var(--text); }
+  .note a { color: var(--accent); }
   .warn { color: var(--warn); }
+  .progress { height: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+  .progress[hidden] { display: none; }
+  .progress span { display: block; height: 100%; width: 40%; border-radius: inherit;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: slide 1.1s linear infinite; }
+  @keyframes slide { from { transform: translateX(-110%); } to { transform: translateX(320%); } }
   details { border-top: 1px solid var(--line); padding-top: 13px; }
   summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--muted); }
   summary::marker { color: var(--accent); }
-  .settings { display: grid; gap: 10px; padding-top: 12px; }
+  .settings { display: grid; gap: 12px; padding-top: 12px; }
   label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 700; }
   input { width: 100%; margin-top: 6px; background: rgba(0,0,0,0.35); border: 1px solid var(--line);
-    border-radius: 10px; color: var(--text); padding: 11px 12px; font: inherit; font-size: 13px; }
+    border-radius: 10px; color: var(--text); padding: 12px; font: inherit; font-size: 16px; min-width: 0; }
   input:focus { outline: 0; border-color: rgba(255,209,26,0.6); }
-  .row { display: flex; gap: 8px; }
-  .row .ghost { flex: 1; }
-  #toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0;
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .row .ghost { flex: 1 1 130px; }
+  code { font-size: 11.5px; background: rgba(0,0,0,0.35); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+  #toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom));
+    transform: translate(-50%, 20px); opacity: 0;
     background: #1d1926; border: 1px solid var(--line); color: var(--text); padding: 11px 16px;
-    border-radius: 12px; font-size: 13px; transition: 180ms; pointer-events: none; max-width: 90vw; }
+    border-radius: 12px; font-size: 13px; transition: 180ms; pointer-events: none;
+    max-width: calc(100vw - 32px); text-align: center; }
   #toast.show { opacity: 1; transform: translate(-50%, 0); }
-  code { font-size: 11.5px; background: rgba(0,0,0,0.35); padding: 2px 6px; border-radius: 6px; }
   .hidden { display: none !important; }
 </style>
 </head>
@@ -94,7 +109,7 @@
 
   <div>
     <h1>Where should this render?</h1>
-    <p class="lead">Mac is faster and free. Cloud is there when the Mac is asleep or away.</p>
+    <p class="lead">Mac is faster and free. Cloud starts from this phone when the Mac is asleep.</p>
   </div>
 
   <div class="mode" role="group" aria-label="Server mode">
@@ -125,15 +140,16 @@
       <span class="status" id="cloudStatus">Not checked</span>
     </div>
     <div class="meta">
-      <span class="tag">4K · 8 GB</span>
+      <span class="tag">2 cores · 8 GB</span>
       <span class="tag">120 core-hours/month</span>
       <span class="tag">No card</span>
     </div>
     <div class="actions">
-      <button class="primary" id="useCloud" type="button">Use Cloud</button>
-      <button class="ghost" id="startCloud" type="button" hidden>Start Codespace</button>
+      <button class="primary" id="useCloud" type="button">Open cloud</button>
+      <button class="ghost" id="startCloud" type="button">GitHub page</button>
     </div>
-    <p class="note" id="cloudNote">Free with every GitHub account and no payment method. Starts when you open the codespace; stops itself after 30 minutes idle.</p>
+    <div class="progress" id="cloudProgress" hidden><span></span></div>
+    <p class="note" id="cloudNote">It stops itself after 30 minutes idle. One tap starts it again and opens it when ready.</p>
   </section>
 
   <p class="note" id="hint"></p>
@@ -150,11 +166,24 @@
         <input id="cloudUrl" inputmode="url" autocomplete="off" placeholder="Found automatically when the codespace starts">
       </div>
       <div>
-        <label for="startUrl">Codespaces page (to start the cloud)</label>
+        <label for="ghToken">GitHub token · one-tap start</label>
+        <input id="ghToken" type="password" autocomplete="off" spellcheck="false" placeholder="ghp_…">
+        <p class="note" style="margin-top:7px">Create a classic token with the <code>codespace</code> scope: <a href="https://github.com/settings/tokens/new?scopes=codespace&amp;description=Tirth%20Editz%20Cloud" target="_blank" rel="noopener">github.com/settings/tokens/new</a>. It stays on this phone.</p>
+      </div>
+      <div>
+        <label for="codespace">Codespace name (optional)</label>
+        <input id="codespace" autocomplete="off" spellcheck="false" placeholder="tirth-editz-…">
+      </div>
+      <div>
+        <label for="cloudSecret">Studio access token (optional)</label>
+        <input id="cloudSecret" autocomplete="off" spellcheck="false" placeholder="Token from the cloud link">
+      </div>
+      <div>
+        <label for="startUrl">Codespaces page (fallback)</label>
         <input id="startUrl" inputmode="url" autocomplete="off" placeholder="https://github.com/codespaces">
       </div>
       <div class="row">
-        <button class="ghost" id="save" type="button">Save addresses</button>
+        <button class="ghost" id="save" type="button">Save on this phone</button>
         <button class="ghost" id="reset" type="button">Reset</button>
       </div>
       <p class="note">On the Mac run <code>tailscale serve --bg 7860</code> once. The address it prints goes above. Everything is stored only on this phone.</p>
@@ -165,30 +194,68 @@
 
 <script>
 const $ = (id) => document.getElementById(id);
-const STORE = { mode: "te_mode", mac: "te_mac", cloud: "te_cloud", start: "te_start" };
+const STORE = {
+  mode: "te_mode",
+  mac: "te_mac",
+  cloud: "te_cloud",
+  start: "te_start",
+  token: "te_gh",
+  secret: "te_secret",
+  space: "te_space",
+};
 const CLOUD_TOPIC = "te-cloud-7f3k9q2m5x8v1b4n6c0";
+const GH = "https://api.github.com";
+
 let macUrl = localStorage.getItem(STORE.mac) || "";
 let cloudUrl = localStorage.getItem(STORE.cloud) || "";
 let startUrl = localStorage.getItem(STORE.start) || "https://github.com/codespaces";
+let ghToken = localStorage.getItem(STORE.token) || "";
+let cloudSecret = localStorage.getItem(STORE.secret) || "";
+let codespaceName = localStorage.getItem(STORE.space) || "";
 let liveCloudUrl = "";
+let activeCloudUrl = "";
 let mode = localStorage.getItem(STORE.mode) || "auto";
 let redirectTimer = null;
+let starting = false;
 let checks = 0;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function toast(message) {
   const node = $("toast");
   node.textContent = message;
   node.classList.add("show");
   clearTimeout(node._timer);
-  node._timer = setTimeout(() => node.classList.remove("show"), 3200);
+  node._timer = setTimeout(() => node.classList.remove("show"), 3600);
 }
 
 function trim(url) {
   return (url || "").trim().replace(/\/+$/, "");
 }
 
-function showStart(visible) {
-  $("startCloud").hidden = !visible;
+function withToken(url) {
+  if (!cloudSecret) return url;
+  try {
+    const parsed = new URL(url);
+    if (!parsed.searchParams.get("token")) {
+      parsed.searchParams.set("token", cloudSecret);
+    }
+    return parsed.toString();
+  } catch (error) {
+    return url;
+  }
+}
+
+function setProgress(active, label) {
+  $("cloudProgress").hidden = !active;
+  $("useCloud").disabled = active;
+  if (label) $("cloudStatus").textContent = label;
+  if (active) $("cloudDot").className = "dot busy";
+}
+
+function elapsedLabel(base, startedAt) {
+  const seconds = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
+  return `${base} · ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
 function setMode(next, save = true) {
@@ -202,8 +269,7 @@ function setMode(next, save = true) {
 }
 
 function setDot(id, state) {
-  const dot = $(id);
-  dot.className = "dot " + state;
+  $(id).className = "dot " + state;
 }
 
 async function ping(url, timeout = 2400) {
@@ -220,6 +286,39 @@ async function ping(url, timeout = 2400) {
     return await response.json();
   } catch (error) {
     return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function github(path, method = "GET") {
+  if (!ghToken) throw new Error("Add a GitHub token in Setup for one-tap start.");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+  try {
+    const response = await fetch(GH + path, {
+      method,
+      cache: "no-store",
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: "Bearer " + ghToken,
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+      signal: controller.signal,
+    });
+    if (response.status === 401 || response.status === 403) {
+      throw new Error("GitHub rejected the token. Create a new token with the codespace scope in Setup.");
+    }
+    if (!response.ok) {
+      let detail = "";
+      try {
+        detail = (await response.json()).message || "";
+      } catch (error) {
+        detail = "";
+      }
+      throw new Error(detail || "GitHub returned " + response.status);
+    }
+    return await response.json();
   } finally {
     clearTimeout(timer);
   }
@@ -295,40 +394,130 @@ async function discoverCloud() {
   }
 }
 
-async function checkCloud() {
-  let url = trim(cloudUrl);
-  let info = url ? await ping(url, 7000) : null;
-  if (!info) {
+async function findCodespace() {
+  const data = await github("/user/codespaces?per_page=100");
+  const list = data.codespaces || [];
+  if (!list.length) {
+    throw new Error("No codespace found. Open github.com/codespaces once and start it, then tap again.");
+  }
+  if (codespaceName) {
+    const named = list.find((item) => item.name === codespaceName);
+    if (named) return named;
+  }
+  const preferred = list.find((item) => item.name.startsWith("tirth-editz"));
+  return preferred || list[0];
+}
+
+async function waitForTunnel(deadline) {
+  while (Date.now() < deadline) {
     const found = await discoverCloud();
-    if (found) {
+    if (found && await ping(found, 6000)) {
       liveCloudUrl = found;
-      url = found;
-      info = await ping(url, 7000);
+      return found;
     }
+    if (cloudUrl && await ping(cloudUrl, 5000)) {
+      liveCloudUrl = trim(cloudUrl);
+      return liveCloudUrl;
+    }
+    await sleep(4000);
   }
-  if (!url) {
-    setDot("cloudDot", "");
-    $("cloudStatus").textContent = "Not running";
-    $("cloudNote").textContent = "Start a codespace and the address appears here by itself.";
-    showStart(true);
-    return null;
+  return "";
+}
+
+async function startCloudFlow() {
+  if (starting) return;
+  if (!ghToken) {
+    document.querySelector("details").open = true;
+    $("ghToken").focus();
+    $("hint").textContent = "Add a GitHub token once, then this button starts the cloud by itself.";
+    toast("Add a GitHub token in Setup first");
+    return;
   }
-  if (location.protocol === "https:" && url.startsWith("http://")) {
-    setDot("cloudDot", "offline");
-    $("cloudStatus").textContent = "Needs HTTPS";
-    return null;
-  }
-  if (info) {
+  starting = true;
+  setMode("cloud");
+  const startedAt = Date.now();
+  $("useCloud").textContent = "Starting…";
+  setProgress(true, "Contacting GitHub");
+  $("hint").textContent = "";
+  try {
+    let space = await findCodespace();
+    if (space.state !== "Available") {
+      setProgress(true, "Starting codespace");
+      await github(`/user/codespaces/${space.name}/start`, "POST");
+      const deadline = startedAt + 240000;
+      while (Date.now() < deadline) {
+        await sleep(3000);
+        space = await github(`/user/codespaces/${space.name}`);
+        if (space.state === "Available") break;
+        if (["Deleted", "Failed"].includes(space.state) && Date.now() - startedAt > 20000) {
+          throw new Error("GitHub could not start the codespace. Open the GitHub page and start it there once.");
+        }
+        setProgress(true, elapsedLabel("Starting codespace", startedAt));
+      }
+      if (space.state !== "Available") {
+        throw new Error("The codespace is still starting. Tap again in a minute.");
+      }
+    }
+    setProgress(true, "Waiting for the tunnel");
+    const url = await waitForTunnel(Date.now() + 150000);
+    if (!url) {
+      throw new Error("The codespace is on but the tunnel is not ready. Tap again in about 30 seconds.");
+    }
+    activeCloudUrl = url;
     setDot("cloudDot", "online");
     $("cloudStatus").textContent = "Running";
-    $("cloudNote").textContent = `Ready at ${url.replace("https://", "")}. It stops itself after 30 minutes idle.`;
-    showStart(false);
+    $("cloudNote").textContent = `Ready at ${url.replace("https://", "")}. Opening…`;
+    location.href = withToken(url);
+  } catch (error) {
+    const recovered = await checkCloud();
+    if (recovered) {
+      location.href = withToken(activeCloudUrl);
+      return;
+    }
+    const message = error && error.name === "AbortError"
+      ? "GitHub did not answer. Check the phone connection and tap again."
+      : error.message;
+    setDot("cloudDot", "offline");
+    $("cloudStatus").textContent = "Start failed";
+    $("cloudNote").textContent = message;
+    $("hint").textContent = message;
+    toast(message);
+  } finally {
+    starting = false;
+    if ($("useCloud").textContent === "Starting…" || $("useCloud").textContent === "Waiting…") {
+      $("useCloud").textContent = "Start cloud & open";
+    }
+    $("useCloud").disabled = false;
+    setProgress(false);
+  }
+}
+
+async function checkCloud() {
+  if (starting) return null;
+  const found = await discoverCloud();
+  let url = found ? trim(found) : "";
+  let info = url ? await ping(url, 6000) : null;
+  if (!info && cloudUrl) {
+    url = trim(cloudUrl);
+    info = await ping(url, 4000);
+  }
+  if (info) {
+    liveCloudUrl = url;
+    activeCloudUrl = url;
+    setDot("cloudDot", "online");
+    $("cloudStatus").textContent = "Running";
+    $("cloudNote").textContent = `Ready at ${url.replace("https://", "")}. It stops itself after 30 minutes idle; one tap restarts it.`;
+    $("useCloud").textContent = "Open cloud";
+    $("useCloud").disabled = false;
     return info;
   }
-  setDot("cloudDot", "busy");
-  $("cloudStatus").textContent = "Awake?";
-  $("cloudNote").textContent = "No codespace is answering. Start one, wait about a minute, then tap Check again.";
-  showStart(true);
+  setDot("cloudDot", ghToken ? "offline" : "");
+  $("cloudStatus").textContent = "Sleeping";
+  $("cloudNote").textContent = ghToken
+    ? "It stops after 30 minutes idle. Tap Start cloud & open — this phone starts it and opens it when ready."
+    : "Tap GitHub page to start it by hand, or add a GitHub token in Setup for one-tap start.";
+  $("useCloud").textContent = "Start cloud & open";
+  $("useCloud").disabled = false;
   return null;
 }
 
@@ -343,22 +532,23 @@ function openMac() {
 }
 
 function openCloud() {
-  const target = trim(cloudUrl) || trim(liveCloudUrl);
+  const target = trim(activeCloudUrl) || trim(liveCloudUrl) || trim(cloudUrl);
   if (!target) {
-    $("hint").textContent = "No codespace is running. Tap Start Codespace, then Check again.";
-    showStart(true);
+    $("hint").textContent = "No cloud address yet. Tap Start cloud & open.";
     return;
   }
-  location.href = target;
+  location.href = withToken(target);
 }
 
 async function decide() {
   clearTimeout(redirectTimer);
   if (mode === "cloud") {
-    $("hint").textContent = "Checking the codespace…";
+    $("hint").textContent = "Checking the cloud…";
     const info = await checkCloud();
     if (info) openCloud();
-    else $("hint").textContent = "Cloud is stopped. Start the codespace, then tap Check again.";
+    else $("hint").textContent = ghToken
+      ? "Cloud is sleeping. Tap Start cloud & open."
+      : "Cloud is sleeping. Tap GitHub page to start it, or add a token in Setup.";
     return;
   }
   if (mode === "mac") {
@@ -367,7 +557,6 @@ async function decide() {
     else $("hint").textContent = "Mac is offline. You can switch to Cloud, or wake the Mac and tap Check again.";
     return;
   }
-  // auto: Mac first, then Codespaces
   $("hint").textContent = "Checking the Mac…";
   const mac = await checkMac();
   if (mac) {
@@ -378,7 +567,9 @@ async function decide() {
   $("hint").textContent = "Mac is offline. Checking the codespace…";
   const cloud = await checkCloud();
   if (!cloud) {
-    $("hint").textContent = "Both are offline. Wake the Mac, or start a codespace and tap Check again.";
+    $("hint").textContent = ghToken
+      ? "Both are offline. Tap Start cloud & open to wake the codespace."
+      : "Both are offline. Wake the Mac, or start a codespace from GitHub.";
     return;
   }
   let countdown = 3;
@@ -411,9 +602,10 @@ $("useMac").addEventListener("click", async () => {
 
 $("useCloud").addEventListener("click", async () => {
   setMode("cloud");
+  if (starting) return;
   const info = await checkCloud();
   if (info) openCloud();
-  else $("hint").textContent = "Cloud is stopped. Start the codespace, then tap Check again.";
+  else startCloudFlow();
 });
 
 $("startCloud").addEventListener("click", () => {
@@ -428,26 +620,38 @@ $("retry").addEventListener("click", () => {
 $("save").addEventListener("click", () => {
   macUrl = trim($("macUrl").value);
   cloudUrl = trim($("cloudUrl").value);
-  startUrl = trim($("startUrl").value);
+  startUrl = trim($("startUrl").value) || "https://github.com/codespaces";
+  ghToken = $("ghToken").value.trim();
+  codespaceName = $("codespace").value.trim();
+  cloudSecret = $("cloudSecret").value.trim();
   localStorage.setItem(STORE.mac, macUrl);
   localStorage.setItem(STORE.cloud, cloudUrl);
   localStorage.setItem(STORE.start, startUrl);
-  toast("Addresses saved on this phone");
+  localStorage.setItem(STORE.token, ghToken);
+  localStorage.setItem(STORE.space, codespaceName);
+  localStorage.setItem(STORE.secret, cloudSecret);
+  $("cloudSecret").value = cloudSecret;
+  toast("Saved on this phone");
   decide();
 });
 
 $("reset").addEventListener("click", () => {
-  localStorage.removeItem(STORE.mac);
-  localStorage.removeItem(STORE.cloud);
-  localStorage.removeItem(STORE.start);
-  localStorage.removeItem(STORE.mode);
+  Object.values(STORE).forEach((key) => localStorage.removeItem(key));
   macUrl = "";
   cloudUrl = "";
   startUrl = "https://github.com/codespaces";
+  ghToken = "";
+  cloudSecret = "";
+  codespaceName = "";
+  liveCloudUrl = "";
+  activeCloudUrl = "";
   setMode("auto", false);
   $("macUrl").value = "";
   $("cloudUrl").value = "";
   $("startUrl").value = startUrl;
+  $("ghToken").value = "";
+  $("cloudSecret").value = "";
+  $("codespace").value = "";
   checkMac();
   checkCloud();
   toast("Reset");
@@ -456,11 +660,14 @@ $("reset").addEventListener("click", () => {
 $("macUrl").value = macUrl;
 $("cloudUrl").value = cloudUrl;
 $("startUrl").value = startUrl;
+$("ghToken").value = ghToken;
+$("cloudSecret").value = cloudSecret;
+$("codespace").value = codespaceName;
 setMode(mode, false);
 
 if (!trim(macUrl) && !trim(cloudUrl)) {
   document.querySelector("details").open = true;
-  $("hint").textContent = "First run: add the MacBook address, or start a codespace — its address is found by itself.";
+  $("hint").textContent = "First run: add the MacBook address, or add a GitHub token so this phone can start the cloud.";
   setDot("macDot", "");
   $("macStatus").textContent = "Not set up";
   checkMac();
@@ -468,6 +675,10 @@ if (!trim(macUrl) && !trim(cloudUrl)) {
 } else {
   decide();
 }
+
+setInterval(() => {
+  if (!document.hidden && !starting) checkCloud();
+}, 45000);
 </script>
 </body>
 </html>
